@@ -7,12 +7,6 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -35,4 +29,71 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* General */
+.display-none{
+  display: none;
+}
+
+/* Login form */
+.modal-content{
+  padding: 20px;
+  background-color: transparent;
+  border: none;
+}
+
+.border-primary{
+  background-color: azure;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+
+.nav-tabs>li>a {
+  margin-right: 2px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.nav>li>a {
+  position: relative;
+  display: inline;
+  padding: 10px 15px;
+  bottom: 8px;
+}
+
+.nav-tabs>li>a.active{
+  color: #555;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+
+#formControlTextarea1{
+  height: 500px;
+}
+
+#generatedOutput{
+  position: absolute;
+  top: 50%;
+}
+
+.btn{
+  margin: 15px 0;
+}
+
+.prediction-list-holder{
+  top: 20px;
+  position: relative;
+}
+
+.prediction-list{
+  list-style: none;
+}
+
+.prediction-list-item{
+  margin: 25px 0;
 }
