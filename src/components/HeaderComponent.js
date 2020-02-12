@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactModalLogin from "react-modal-login";
+import { NavLink } from 'react-router-dom';
 
 class HeaderComponent extends Component {
 
@@ -113,7 +114,7 @@ class HeaderComponent extends Component {
     }
 
     toggleAuthorized() {
-        this.setState({authorized: !this.state.authorized});
+        this.setState({authorized: true});
     }
 
     postLogin(usn, pswd){
@@ -179,9 +180,10 @@ class HeaderComponent extends Component {
             navigation =  (
                     <div className="collapse navbar-collapse" id="navbarResponsive">
                         <ul id="navigation-list" className="navbar-nav ml-auto">
-                            <li  className="nav-item"><a className="nav-link">Profile</a></li>
+                            <li  className="nav-item"><NavLink className="nav-link" to='/profile'>Profile</NavLink></li>
                         </ul>
                     </div>
+
             );
         }
         else {
@@ -298,7 +300,7 @@ class HeaderComponent extends Component {
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark static-top">
                 <div className="container">
-                    <a className="navbar-brand">Thesis</a>
+                    <NavLink className="navbar-brand" to='/'>Your Text</NavLink>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"/>
                     </button>
