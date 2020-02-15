@@ -49,7 +49,7 @@ function Login() {
             .then(response => response.json())
             .then(response => {
                 if (response.success) {
-                    setAuthTokens(response.data); // TODO look in cookies
+                    setAuthTokens(true);
                     setLoggedIn(true);
                 }
                 else {

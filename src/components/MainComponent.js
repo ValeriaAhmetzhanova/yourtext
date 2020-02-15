@@ -5,6 +5,7 @@ import ProfileComponent from "./ProfileComponent";
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import Login from "./Login";
 import PrivateRoute from "../PrivateRoute";
+import Signup from "./SingnUp";
 
 class Main extends Component {
 
@@ -16,12 +17,14 @@ class Main extends Component {
     }
 
     render() {
+        console.log("token is" + this.props.token);
         return (
             <div>
-                <HeaderComponent/>
+                <HeaderComponent token={this.props.token}/>
                 <Switch>
                     <Route path="/main" component={() => <MainPageComponent/>} />} />
                     <Route path="/login" component={Login} />
+                    <Route path="/signup" component={Signup} />
                     <PrivateRoute path="/profile" component={ProfileComponent} />
                     <Redirect to="/main" />
                 </Switch>
