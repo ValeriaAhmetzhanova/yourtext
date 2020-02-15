@@ -3,6 +3,8 @@ import HeaderComponent from './HeaderComponent';
 import MainPageComponent from './MainPageComponent';
 import ProfileComponent from "./ProfileComponent";
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import Login from "./Login";
+import PrivateRoute from "../PrivateRoute";
 
 class Main extends Component {
 
@@ -19,7 +21,8 @@ class Main extends Component {
                 <HeaderComponent/>
                 <Switch>
                     <Route path="/main" component={() => <MainPageComponent/>} />} />
-                    <Route path="/profile" component={() => <ProfileComponent/>} />} />
+                    <Route path="/login" component={Login} />
+                    <PrivateRoute path="/profile" component={ProfileComponent} />
                     <Redirect to="/main" />
                 </Switch>
             </div>
