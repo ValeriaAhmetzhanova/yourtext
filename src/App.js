@@ -3,9 +3,6 @@ import './App.css';
 import Main from './components/MainComponent';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { AuthContext } from "./context/auth";
-import PrivateRoute from './PrivateRoute';
-import ProfileComponent from "./components/ProfileComponent";
-import Login from "./components/Login";
 
 function App(props) {
 
