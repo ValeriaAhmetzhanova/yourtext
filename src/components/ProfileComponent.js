@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, ButtonToolbar, Col, Form, FormGroup, Modal} from "react-bootstrap";
+import {Button, ButtonToolbar, Form, Modal} from "react-bootstrap";
 
 
 class ProfileComponent extends Component {
@@ -10,10 +10,17 @@ class ProfileComponent extends Component {
             newDatasetModalShow: false,
             newDatasetTitle: '',
             newDatasetText: '',
+            token: this.props.token,
+            datasets: ''
         };
         this.toggleDatasetModal = this.toggleDatasetModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.loadDatasets = this.loadDatasets.bind(this);
+    }
+
+    componentDidMount(){
+        this.loadDatasets();
     }
 
     toggleDatasetModal(){
@@ -38,11 +45,43 @@ class ProfileComponent extends Component {
         }
     }
 
+    loadDatasets(){
+        var url = 'http://169.60.115.39:8888/datasets';
+        var params = {
+            "token": this.state.token
+        };
+
+        return fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    this.setState({
+                        datasets: response.data
+                    });
+                }
+                else {
+                    alert(response.text);
+                }})
+            .catch(error => console.log(error));
+    }
+
     sendNewDataset(name, data) {
         var url = 'http://169.60.115.39:8888/upload/small';
         var params = {
             "title": name,
-            "text": data
+            "text": data,
+            "token": this.state.token
         };
 
         return fetch(url, {
@@ -61,6 +100,7 @@ class ProfileComponent extends Component {
             .then(response => {
                 if (response.success) {
                     alert("Success!");
+                    this.toggleDatasetModal();
                 }
                 else {
                     alert(response.text);

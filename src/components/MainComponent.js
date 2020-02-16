@@ -17,7 +17,6 @@ class Main extends Component {
     }
 
     render() {
-        console.log("token is" + this.props.token);
         return (
             <div>
                 <HeaderComponent token={this.props.token}/>
@@ -25,7 +24,7 @@ class Main extends Component {
                     <Route path="/main" component={() => <MainPageComponent/>} />} />
                     <Route path="/login" component={Login} />
                     <Route path="/signup" component={Signup} />
-                    <PrivateRoute path="/profile" component={ProfileComponent} />
+                    <PrivateRoute path="/profile" component={() => <ProfileComponent token={this.props.token}/>} />} />
                     <Redirect to="/main" />
                 </Switch>
             </div>
