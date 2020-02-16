@@ -3,7 +3,6 @@ import './App.css';
 import Main from './components/MainComponent';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { AuthContext } from "./context/auth";
-import { CookiesProvider } from 'react-cookie';
 
 function App(props) {
 
@@ -15,15 +14,13 @@ function App(props) {
     }
 
   return (
-      <CookiesProvider>
-          <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
-              <Router>
-                  <div className="App">
-                      <Main token={authTokens} cookies={props.cookies}/>
-                  </div>
-              </Router>
-          </AuthContext.Provider>
-      </CookiesProvider>
+      <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
+          <Router>
+              <div className="App">
+                  <Main token={authTokens}/>
+              </div>
+          </Router>
+      </AuthContext.Provider>
   );
 }
 
