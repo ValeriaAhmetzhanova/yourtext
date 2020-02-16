@@ -97,3 +97,9 @@
 .prediction-list-item{
   margin: 25px 0;
 }
+
+/* Profile page */
+
+.dataset-card.card{
+  display: inline-flex;
+}

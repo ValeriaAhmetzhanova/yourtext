@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, ButtonToolbar, Form, Modal} from "react-bootstrap";
+import {Button, ButtonToolbar, Card, Form, Modal} from "react-bootstrap";
 
 
 class ProfileComponent extends Component {
@@ -11,7 +11,7 @@ class ProfileComponent extends Component {
             newDatasetTitle: '',
             newDatasetText: '',
             token: this.props.token,
-            datasets: ''
+            datasets: []
         };
         this.toggleDatasetModal = this.toggleDatasetModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -109,17 +109,14 @@ class ProfileComponent extends Component {
     }
 
     render() {
-
-        const MyDatasets = () => {
-
-            const datasets = this.state.datasets.map((dataset) => {
-                return (
-                    <div className="col-12 col-md-5 m-1" key={dataset._id}>
-                        TEXT
-                    </div>
-                );
-            });
-        }
+        console.log(this.state.datasets);
+        const datasets = this.state.datasets.map((dataset) => {
+            return (
+                <Card className={"col-4 dataset-card"}>
+                    <Card.Body>{dataset.meta.title}</Card.Body>
+                </Card>
+            );
+        });
 
         return(
             <div>
@@ -169,9 +166,10 @@ class ProfileComponent extends Component {
                                 </Modal.Footer>
                             </Modal>
                         </ButtonToolbar>
-
                     </div>
-
+                    <div>
+                        {datasets}
+                    </div>
                 </div>
             </div>
         )
