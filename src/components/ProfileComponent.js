@@ -81,7 +81,6 @@ class ProfileComponent extends Component {
         var params = {
             "title": name,
             "text": data,
-            "token": this.state.token
         };
 
         return fetch(url, {
@@ -91,6 +90,7 @@ class ProfileComponent extends Component {
             credentials: 'same-origin', // include, *same-origin, omit
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
             },
             redirect: 'follow', // manual, *follow, error
             referrer: 'no-referrer', // no-referrer, *client
@@ -109,6 +109,17 @@ class ProfileComponent extends Component {
     }
 
     render() {
+
+        const MyDatasets = () => {
+
+            const datasets = this.state.datasets.map((dataset) => {
+                return (
+                    <div className="col-12 col-md-5 m-1" key={dataset._id}>
+                        TEXT
+                    </div>
+                );
+            });
+        }
 
         return(
             <div>
