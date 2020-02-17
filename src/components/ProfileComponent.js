@@ -8,16 +8,23 @@ class ProfileComponent extends Component {
         super(props);
         this.state = {
             newDatasetModalShow: false,
+            editDatasetModalShow: false,
+            currentEditId: '',
+            currentEditTitle: '',
             newDatasetTitle: '',
             newDatasetText: '',
+            editedDatasetText: '',
+            previousDatasetText: '',
             token: this.props.token,
             datasets: []
         };
         this.toggleDatasetModal = this.toggleDatasetModal.bind(this);
+        this.toggleEditModal = this.toggleEditModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.loadDatasets = this.loadDatasets.bind(this);
     }
+    // TODO reset state fields on new dataset / edit dataset
 
     componentDidMount(){
         this.loadDatasets();
@@ -25,6 +32,15 @@ class ProfileComponent extends Component {
 
     toggleDatasetModal(){
         this.setState({newDatasetModalShow: !this.state.newDatasetModalShow});
+    }
+
+    toggleEditModal(id, title){
+        this.loadPreviousText(id);
+        this.setState({
+            editDatasetModalShow: !this.state.editDatasetModalShow,
+            currentEditId: id,
+            currentEditTitle: title
+        });
     }
 
     handleInputChange(event) {
@@ -45,11 +61,43 @@ class ProfileComponent extends Component {
         }
     }
 
+    handleEdit(id) {
+        var text = this.state.editedDatasetText;
+        if (text !== '' && id) {
+            this.sendEditDataset(id, text);
+        }
+    }
+
+    loadPreviousText(id){
+        var url = 'http://169.60.115.39:8888/datasets/' + id;
+
+        return fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    this.setState({
+                        previousDatasetText: response.text
+                    });
+                }
+                else {
+                    alert(response.text);
+                }})
+            .catch(error => console.log(error));
+    }
+
     loadDatasets(){
         var url = 'http://169.60.115.39:8888/datasets';
-        var params = {
-            "token": this.state.token
-        };
 
         return fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -101,6 +149,39 @@ class ProfileComponent extends Component {
                 if (response.success) {
                     alert("Success!");
                     this.toggleDatasetModal();
+                    this.loadDatasets();
+                }
+                else {
+                    alert(response.text);
+                }})
+            .catch(error => console.log(error));
+    }
+
+    sendEditDataset(id, data) {
+        var url = 'http://169.60.115.39:8888/update/small';
+        var params = {
+            "dataset_id": id,
+            "text": data,
+        };
+
+        return fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(params), // тип данных в body должен соответвовать значению заголовка "Content-Type"
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    alert("Success!");
+                    this.toggleEditModal();
                 }
                 else {
                     alert(response.text);
@@ -109,11 +190,44 @@ class ProfileComponent extends Component {
     }
 
     render() {
-        console.log(this.state.datasets);
         const datasets = this.state.datasets.map((dataset) => {
+            var id = dataset.meta._id;
+            var title = dataset.meta.title;
             return (
-                <Card className={"col-4 dataset-card"}>
-                    <Card.Body>{dataset.meta.title}</Card.Body>
+                <Card className={"col-4 dataset-card"} key={dataset.meta._id}>
+                    <Card.Body>{title}</Card.Body>
+                    <span onClick={() => this.toggleEditModal(id, title)}>edit</span>
+                    <Modal
+                        show={this.state.editDatasetModalShow}
+                        onHide={() => this.toggleEditModal(id, title)}
+                        size="lg"
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title id="contained-modal-title-vcenter">
+                                Edit {this.state.currentEditTitle} dataset
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form onSubmit={this.handleEdit}>
+                                <Form.Group controlId={"formGroupText" + id}>
+                                    <Form.Label>Text</Form.Label>
+                                    <Form.Control required
+                                                  as="textarea"
+                                                  rows="10"
+                                                  name={'editedDatasetText'}
+                                                  onChange={this.handleInputChange}
+                                                  value={this.state.previousDatasetText}
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button type={"submit"} variant="primary" onClick={() => this.handleEdit(this.state.currentEditId)}>Save changes</Button>
+                        </Modal.Footer>
+                    </Modal>
+
                 </Card>
             );
         });
