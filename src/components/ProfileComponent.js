@@ -26,20 +26,35 @@ class ProfileComponent extends Component {
     }
     // TODO reset state fields on new dataset / edit dataset
 
+    resetDatasetState(){
+        this.setState({
+            currentEditId: '',
+            currentEditTitle: '',
+            newDatasetTitle: '',
+            newDatasetText: '',
+            editedDatasetText: '',
+            previousDatasetText: '',
+        });
+    }
+
     componentDidMount(){
         this.loadDatasets();
     }
 
     toggleDatasetModal(){
+        this.resetDatasetState();
         this.setState({newDatasetModalShow: !this.state.newDatasetModalShow});
     }
 
     toggleEditModal(id, title){
-        this.loadPreviousText(id);
+        this.resetDatasetState();
+        if (!this.state.editDatasetModalShow){
+            this.loadPreviousText(id);
+        }
         this.setState({
             editDatasetModalShow: !this.state.editDatasetModalShow,
             currentEditId: id,
-            currentEditTitle: title
+            currentEditTitle: title,
         });
     }
 
@@ -59,6 +74,7 @@ class ProfileComponent extends Component {
         if (title !== '' && text !== '') {
             this.sendNewDataset(title, text);
         }
+        // this.resetDatasetState();
     }
 
     handleEdit(id) {
@@ -66,6 +82,7 @@ class ProfileComponent extends Component {
         if (text !== '' && id) {
             this.sendEditDataset(id, text);
         }
+        // this.resetDatasetState();
     }
 
     loadPreviousText(id){
@@ -87,7 +104,7 @@ class ProfileComponent extends Component {
             .then(response => {
                 if (response.success) {
                     this.setState({
-                        previousDatasetText: response.text
+                        previousDatasetText: response.data.text
                     });
                 }
                 else {
@@ -218,7 +235,7 @@ class ProfileComponent extends Component {
                                                   rows="10"
                                                   name={'editedDatasetText'}
                                                   onChange={this.handleInputChange}
-                                                  value={this.state.previousDatasetText}
+                                                  defaultValue={this.state.previousDatasetText}
                                     />
                                 </Form.Group>
                             </Form>
