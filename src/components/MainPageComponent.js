@@ -3,10 +3,16 @@ import { EditorState } from 'draft-js';
 
 import Editor from 'draft-js-plugins-editor';
 
-import createAutocompletePlugin from '../AutocompletePlugin'
-import editorStyles from './editorStyles.module.css'
+import createAutocompletePlugin from '../AutocompletePlugin';
+import createSideToolbarPlugin from 'draft-js-side-toolbar-plugin';
+import editorStyles from './styles/editorStyles.module.css';
 
-import mentions from './mentions'
+import buttonStyles from './styles/buttonStyles.module.css';
+import toolbarStyles from './styles/toolbarStyles.module.css';
+import blockTypeSelectStyles from './styles/blockTypeSelectStyles.module.css';
+
+import mentions from './mentions';
+import 'draft-js-side-toolbar-plugin/lib/plugin.css';
 
 class MainPageComponent extends Component {
 
@@ -18,6 +24,11 @@ class MainPageComponent extends Component {
             entityMutability: 'MUTABLE',
             mentionPrefix: '',
             supportWhitespace: true,
+        });
+
+        this.sideToolbarPlugin = createSideToolbarPlugin({
+            position: 'left',
+            theme: { buttonStyles, toolbarStyles, blockTypeSelectStyles }
         });
     }
 
@@ -49,7 +60,9 @@ class MainPageComponent extends Component {
 
     render() {
         const { MentionSuggestions } = this.autocompletePlugin;
-        const plugins = [this.autocompletePlugin];
+        const { SideToolbar } = this.sideToolbarPlugin;
+        // const plugins = [];
+        const plugins = [this.autocompletePlugin, this.sideToolbarPlugin];
 
         return (
             <div className="container">
@@ -75,6 +88,7 @@ class MainPageComponent extends Component {
                                 onSearchChange={this.onSearchChange}
                                 suggestions={this.state.suggestions}
                             />
+                            <SideToolbar />
                         </div>
                     </div>
                 </div>
