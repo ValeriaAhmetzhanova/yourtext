@@ -25,7 +25,7 @@ class ProfileComponent extends Component {
     render() {
         var page;
         if (this.state.chosen === 'MyModels') {
-            page = <ModelsComponent/>;
+            page = <ModelsComponent token={this.state.token}/>;
         }
         else if (this.state.chosen === 'MyDatasets'){
             page = <DatasetsComponent token={this.state.token}/>;

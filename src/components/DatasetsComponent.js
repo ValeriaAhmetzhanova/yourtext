@@ -16,7 +16,8 @@ class DatasetsComponent extends Component {
             editedDatasetText: '',
             previousDatasetText: '',
             token: this.props.token,
-            datasets: []
+            datasets: [],
+            datasetsLoading: true
         };
         this.toggleDatasetModal = this.toggleDatasetModal.bind(this);
         this.toggleEditModal = this.toggleEditModal.bind(this);
@@ -129,7 +130,8 @@ class DatasetsComponent extends Component {
             .then(response => {
                 if (response.success) {
                     this.setState({
-                        datasets: response.data
+                        datasets: response.data,
+                        datasetsLoading: false
                     });
                 }
                 else {
@@ -204,103 +206,112 @@ class DatasetsComponent extends Component {
     }
 
     render() {
-        const datasets = this.state.datasets.map((dataset) => {
-            var id = dataset.meta._id;
-            var title = dataset.meta.title;
-            return (
-                <Card className={"col-4 dataset-card"} key={dataset.meta._id}>
-                    <Card.Body>{title}</Card.Body>
-                    <span onClick={() => this.toggleEditModal(id, title)}>edit</span>
-                    <Modal
-                        show={this.state.editDatasetModalShow}
-                        onHide={() => this.toggleEditModal(id, title)}
-                        size="lg"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                    >
-                        <Modal.Header closeButton>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Edit {this.state.currentEditTitle} dataset
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Form onSubmit={this.handleEdit}>
-                                <Form.Group controlId={"formGroupText" + id}>
-                                    <Form.Label>Text</Form.Label>
-                                    <Form.Control required
-                                                  as="textarea"
-                                                  rows="10"
-                                                  name={'editedDatasetText'}
-                                                  onChange={this.handleInputChange}
-                                                  defaultValue={this.state.previousDatasetText}
-                                    />
-                                </Form.Group>
-                            </Form>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button type={"submit"} variant="primary" onClick={() => this.handleEdit(this.state.currentEditId)}>Save changes</Button>
-                        </Modal.Footer>
-                    </Modal>
-
-                </Card>
+        if (this.state.datasetsLoading) {
+            return(
+                <div>
+                    Loading...
+                </div>
             );
-        });
+        }
+        else {
+            const datasets = this.state.datasets.map((dataset) => {
+                var id = dataset.meta._id;
+                var title = dataset.meta.title;
+                return (
+                    <Card className={"col-4 dataset-card"} key={dataset.meta._id}>
+                        <Card.Body>{title}</Card.Body>
+                        <span onClick={() => this.toggleEditModal(id, title)}>edit</span>
+                        <Modal
+                            show={this.state.editDatasetModalShow}
+                            onHide={() => this.toggleEditModal(id, title)}
+                            size="lg"
+                            aria-labelledby="contained-modal-title-vcenter"
+                            centered
+                        >
+                            <Modal.Header closeButton>
+                                <Modal.Title id="contained-modal-title-vcenter">
+                                    Edit {this.state.currentEditTitle} dataset
+                            </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form onSubmit={this.handleEdit}>
+                                    <Form.Group controlId={"formGroupText" + id}>
+                                        <Form.Label>Text</Form.Label>
+                                        <Form.Control required
+                                            as="textarea"
+                                            rows="10"
+                                            name={'editedDatasetText'}
+                                            onChange={this.handleInputChange}
+                                            defaultValue={this.state.previousDatasetText}
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button type={"submit"} variant="primary" onClick={() => this.handleEdit(this.state.currentEditId)}>Save changes</Button>
+                            </Modal.Footer>
+                        </Modal>
 
-        return(
-            <div>
-                <div className={"p-3"}>
-                    <div className={"row mt-4"}>
-                        <h2 className={"m-3"}>My Datasets</h2>
-                        <ButtonToolbar>
-                            <Button variant="primary" onClick={() => this.toggleDatasetModal()}>
-                                New
+                    </Card>
+                );
+            });
+
+            return (
+                <div>
+                    <div className={"p-3"}>
+                        <div className={"row mt-4"}>
+                            <h2 className={"m-3"}>My Datasets</h2>
+                            <ButtonToolbar>
+                                <Button variant="primary" onClick={() => this.toggleDatasetModal()}>
+                                    New
                             </Button>
-                            <Modal
-                                show={this.state.newDatasetModalShow}
-                                onHide={() => this.toggleDatasetModal()}
-                                size="lg"
-                                aria-labelledby="contained-modal-title-vcenter"
-                                centered
-                            >
-                                <Modal.Header closeButton>
-                                    <Modal.Title id="contained-modal-title-vcenter">
-                                        Create new dataset
+                                <Modal
+                                    show={this.state.newDatasetModalShow}
+                                    onHide={() => this.toggleDatasetModal()}
+                                    size="lg"
+                                    aria-labelledby="contained-modal-title-vcenter"
+                                    centered
+                                >
+                                    <Modal.Header closeButton>
+                                        <Modal.Title id="contained-modal-title-vcenter">
+                                            Create new dataset
                                     </Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Form onSubmit={this.handleSubmit}>
-                                        <Form.Group controlId="formGroupTitle">
-                                            <Form.Label>Title</Form.Label>
-                                            <Form.Control required
-                                                          type="text"
-                                                          placeholder="Title"
-                                                          name={'newDatasetTitle'}
-                                                          onChange={this.handleInputChange}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="formGroupText">
-                                            <Form.Label>Text</Form.Label>
-                                            <Form.Control required
-                                                          as="textarea"
-                                                          rows="10"
-                                                          name={'newDatasetText'}
-                                                          onChange={this.handleInputChange}
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button type={"submit"} variant="primary" onClick={() => this.handleSubmit()}>Save changes</Button>
-                                </Modal.Footer>
-                            </Modal>
-                        </ButtonToolbar>
-                    </div>
-                    <div>
-                        {datasets}
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Form onSubmit={this.handleSubmit}>
+                                            <Form.Group controlId="formGroupTitle">
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control required
+                                                    type="text"
+                                                    placeholder="Title"
+                                                    name={'newDatasetTitle'}
+                                                    onChange={this.handleInputChange}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formGroupText">
+                                                <Form.Label>Text</Form.Label>
+                                                <Form.Control required
+                                                    as="textarea"
+                                                    rows="10"
+                                                    name={'newDatasetText'}
+                                                    onChange={this.handleInputChange}
+                                                />
+                                            </Form.Group>
+                                        </Form>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button type={"submit"} variant="primary" onClick={() => this.handleSubmit()}>Save changes</Button>
+                                    </Modal.Footer>
+                                </Modal>
+                            </ButtonToolbar>
+                        </div>
+                        <div>
+                            {datasets}
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
     }
 }
 
