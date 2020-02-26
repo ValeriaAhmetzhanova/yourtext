@@ -31,10 +31,19 @@ class ModelsComponent extends Component {
         this.loadDatasets();
     }
 
+    resetDatasetState() {
+        this.setState({
+            newModelTitle: '',
+            newModelArch: this.state.archs[0]._id,
+            newModelDataset: this.state.datasets[0].meta._id,
+        });
+    }
+
     handleSubmit(event) {
         var title = this.state.newModelTitle;
         var arch = this.state.newModelArch;
         var dataset = this.state.newModelDataset;
+        console.log(title, arch, dataset);
         if (title !== '' && arch !== '' && dataset !== '') {
             this.sendNewModel(title, arch, dataset);
         }
@@ -43,8 +52,8 @@ class ModelsComponent extends Component {
     sendNewModel(title, arch, dataset) {
         var url = 'http://169.60.115.39:8888/model';
         var params = {
-            "arch_id": arch._id,
-            "dataset_id": dataset.meta._id,
+            "arch_id": arch,
+            "dataset_id": dataset,
             "title": title,
         };
 
@@ -110,7 +119,7 @@ class ModelsComponent extends Component {
                     this.setState({
                         datasets: response.data,
                         loadingDatasets: false,
-                        newModelDataset: response.data[0],
+                        newModelDataset: response.data[0].meta._id,
                     });
                 }
                 else {
@@ -170,7 +179,7 @@ class ModelsComponent extends Component {
                     this.setState({
                         archs: response.data,
                         loadingArch: false,
-                        newModelArch: response.data[0],
+                        newModelArch: response.data[0]._id,
                     });
                 }
                 else {
@@ -206,7 +215,7 @@ class ModelsComponent extends Component {
                 var title = arch.name;
                 var type = arch.archtype;
                 return (
-                    <option key={id}>
+                    <option key={id} value={id}>
                         {title} ( {type} )
                     </option>
                 );
@@ -216,7 +225,7 @@ class ModelsComponent extends Component {
                 var id = dataset.meta._id;
                 var title = dataset.meta.title;
                 return (
-                    <option key={id}>
+                    <option key={id} value={id}>
                         {title}
                     </option>
                 );
