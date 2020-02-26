@@ -9,20 +9,25 @@ class ModelsComponent extends Component {
             newModelModalShow: false,
             newModelTitle: '',
             newModelArch: '',
+            newModelDataset: '',
             token: this.props.token,
             models: [],
             archs: [],
-            loadingArch: true
+            loadingArch: true,
+            datasets: [],
+            loadingDatasets: true
         };
         this.loadModels = this.loadModels.bind(this);
         this.loadArch = this.loadArch.bind(this);
         this.toggleModelModal = this.toggleModelModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.loadDatasets = this.loadDatasets.bind(this);
     }
 
     componentDidMount() {
         this.loadModels();
         this.loadArch();
+        this.loadDatasets();
     }
 
     handleInputChange(event) {
@@ -37,6 +42,36 @@ class ModelsComponent extends Component {
 
     toggleModelModal() {
         this.setState({ newModelModalShow: !this.state.newModelModalShow });
+    }
+
+    loadDatasets() {
+        var url = 'http://169.60.115.39:8888/datasets';
+
+        return fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    this.setState({
+                        datasets: response.data,
+                        loadingDatasets: false
+                    });
+                }
+                else {
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
     }
 
     loadModels() {
@@ -101,7 +136,7 @@ class ModelsComponent extends Component {
 
     render(){
 
-        if (this.state.loadingArch) {
+        if (this.state.loadingArch || this.state.loadingDatasets) {
             return (
                 <div>
                     Loading...
@@ -126,6 +161,16 @@ class ModelsComponent extends Component {
                 return (
                     <option key={id}>
                         {title} ( {type} )
+                    </option>
+                );
+            });
+
+            const datasetOptions = this.state.datasets.map((dataset) => {
+                var id = dataset.meta._id;
+                var title = dataset.meta.title;
+                return (
+                    <option key={id}>
+                        {title}
                     </option>
                 );
             });
@@ -163,13 +208,23 @@ class ModelsComponent extends Component {
                                                 />
                                             </Form.Group>
                                             <Form.Group controlId="formGroupArch">
-                                                <Form.Label>Example select</Form.Label>
+                                                <Form.Label>Architecture</Form.Label>
                                                 <Form.Control
                                                     as="select"
                                                     name={'newModelArch'}
                                                     onChange={this.handleInputChange}
                                                 >
                                                     {archOptions}
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="formGroupDatasets">
+                                                <Form.Label>Dataset</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    name={'newModelDataset'}
+                                                    onChange={this.handleInputChange}
+                                                >
+                                                    {datasetOptions}
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>
