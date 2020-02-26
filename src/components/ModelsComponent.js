@@ -95,6 +95,7 @@ class ModelsComponent extends Component {
     }
 
     toggleModelModal() {
+        this.resetDatasetState();
         this.setState({ newModelModalShow: !this.state.newModelModalShow });
     }
 
