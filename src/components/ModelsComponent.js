@@ -22,12 +22,57 @@ class ModelsComponent extends Component {
         this.toggleModelModal = this.toggleModelModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.loadDatasets = this.loadDatasets.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
         this.loadModels();
         this.loadArch();
         this.loadDatasets();
+    }
+
+    handleSubmit(event) {
+        var title = this.state.newModelTitle;
+        var arch = this.state.newModelArch;
+        var dataset = this.state.newModelDataset;
+        if (title !== '' && arch !== '' && dataset !== '') {
+            this.sendNewModel(title, arch, dataset);
+        }
+    }
+
+    sendNewModel(title, arch, dataset) {
+        var url = 'http://169.60.115.39:8888/model';
+        var params = {
+            "arch_id": arch._id,
+            "dataset_id": dataset.meta._id,
+            "title": title,
+        };
+
+        return fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(params), // тип данных в body должен соответвовать значению заголовка "Content-Type"
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    alert("Success!");
+                    this.toggleModelModal();
+                    this.loadModels();
+                }
+                else {
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
     }
 
     handleInputChange(event) {
@@ -64,7 +109,8 @@ class ModelsComponent extends Component {
                 if (response.success) {
                     this.setState({
                         datasets: response.data,
-                        loadingDatasets: false
+                        loadingDatasets: false,
+                        newModelDataset: response.data[0],
                     });
                 }
                 else {
@@ -123,7 +169,8 @@ class ModelsComponent extends Component {
                 if (response.success) {
                     this.setState({
                         archs: response.data,
-                        loadingArch: false
+                        loadingArch: false,
+                        newModelArch: response.data[0],
                     });
                 }
                 else {
