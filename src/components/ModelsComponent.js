@@ -43,7 +43,6 @@ class ModelsComponent extends Component {
         var title = this.state.newModelTitle;
         var arch = this.state.newModelArch;
         var dataset = this.state.newModelDataset;
-        console.log(title, arch, dataset);
         if (title !== '' && arch !== '' && dataset !== '') {
             this.sendNewModel(title, arch, dataset);
         }
