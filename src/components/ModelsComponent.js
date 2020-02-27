@@ -130,32 +130,32 @@ class ModelsComponent extends Component {
     }
 
     loadModels() {
-        // var url = 'http://169.60.115.39:8888/datasets';
+        var url = 'http://169.60.115.39:8888/models';
 
-        // return fetch(url, {
-        //     method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        //     mode: 'cors', // no-cors, cors, *same-origin
-        //     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        //     credentials: 'same-origin', // include, *same-origin, omit
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ' + this.state.token,
-        //     },
-        //     redirect: 'follow', // manual, *follow, error
-        //     referrer: 'no-referrer', // no-referrer, *client
-        // })
-        //     .then(response => response.json())
-        //     .then(response => {
-        //         if (response.success) {
-        //             this.setState({
-        //                 datasets: response.data
-        //             });
-        //         }
-        //         else {
-        //             alert(response.text);
-        //         }
-        //     })
-        //     .catch(error => console.log(error));
+        return fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    this.setState({
+                        models: response.data
+                    });
+                }
+                else {
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
     }
 
     loadArch() {
@@ -189,7 +189,6 @@ class ModelsComponent extends Component {
             .catch(error => console.log(error));
     }
 
-
     render(){
 
         if (this.state.loadingArch || this.state.loadingDatasets) {
@@ -201,10 +200,10 @@ class ModelsComponent extends Component {
         }
         else {
             const models = this.state.models.map((model) => {
-                var id = model.meta._id;
-                var title = model.meta.title;
+                var id = model._id;
+                var title = model.title;
                 return (
-                    <Card className={"col-4 dataset-card"} key={model.meta._id}>
+                    <Card className={"col-4 dataset-card"} key={id}>
                         <Card.Body>{title}</Card.Body>
                     </Card>
                 );
