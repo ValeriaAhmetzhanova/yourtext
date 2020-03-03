@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, ButtonToolbar, Card, Form, Modal } from "react-bootstrap";
+import { Chart } from 'react-charts';
 
 class ModelsComponent extends Component {
 
@@ -24,6 +25,28 @@ class ModelsComponent extends Component {
         this.loadDatasets = this.loadDatasets.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+
+    // data = React.useMemo(
+    //     () => [
+    //         {
+    //             label: 'Series 1',
+    //             data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
+    //         },
+    //         {
+    //             label: 'Series 2',
+    //             data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
+    //         }
+    //     ],
+    //     []
+    // )
+
+    // axes = React.useMemo(
+    //     () => [
+    //         { primary: true, type: 'linear', position: 'bottom' },
+    //         { type: 'linear', position: 'left' }
+    //     ],
+    //     []
+    // )
 
     componentDidMount() {
         this.loadModels();
@@ -74,6 +97,38 @@ class ModelsComponent extends Component {
                 if (response.success) {
                     alert("Success!");
                     this.toggleModelModal();
+                    this.loadModels();
+                }
+                else {
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
+    }
+
+    trainModel(id) {
+        var url = 'http://169.60.115.39:8888/train';
+        var params = {
+            "model_id": id
+        };
+
+        return fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(params), // тип данных в body должен соответвовать значению заголовка "Content-Type"
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    alert("Success!");
                     this.loadModels();
                 }
                 else {
@@ -202,17 +257,29 @@ class ModelsComponent extends Component {
             const models = this.state.models.map((model) => {
                 var id = model._id;
                 var title = model.title;
-                return (
-                    <Card className={"col-4 dataset-card"} key={id}>
-                        <Card.Body>{title}</Card.Body>
-                    </Card>
-                );
+                var state = model.progress.state;
+                if (state === 'created'){
+                    return (
+                        <Card className={"col-4 dataset-card"} key={id}>
+                            <Card.Body>{title}</Card.Body>
+                            <span onClick={() => this.trainModel(id)}>train</span>
+                        </Card>
+                    );
+                }
+                else {
+                    return (
+                        <Card className={"col-4 dataset-card"} key={id}>
+                            <Card.Body>{title}</Card.Body>
+                            <span>Status: {state}</span>
+                        </Card>
+                    );
+                }
             });
 
             const archOptions = this.state.archs.map((arch) => {
                 var id = arch._id;
-                var title = arch.name;
-                var type = arch.archtype;
+                var title = arch.model_name;
+                var type = arch.model_type;
                 return (
                     <option key={id} value={id}>
                         {title} ( {type} )
