@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, ButtonToolbar, Card, Form, Modal} from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Card, Form, Modal } from "react-bootstrap";
 
 
 class DatasetsComponent extends Component {
@@ -17,13 +17,17 @@ class DatasetsComponent extends Component {
             previousDatasetText: '',
             token: this.props.token,
             datasets: [],
-            datasetsLoading: true
+            datasetsLoading: true,
+            createMode: 'file'
         };
         this.toggleDatasetModal = this.toggleDatasetModal.bind(this);
         this.toggleEditModal = this.toggleEditModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.loadDatasets = this.loadDatasets.bind(this);
+
+        this.showFileUpload = this.showFileUpload.bind(this);
+        this.showTextArea = this.showTextArea.bind(this);
     }
 
     resetDatasetState(){
@@ -60,7 +64,16 @@ class DatasetsComponent extends Component {
 
     handleInputChange(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        let value = null;
+
+        if (target.type === 'file') {
+            value = target.files[0];
+        } else if (target.type === 'checkbox') {
+            value = target.checked;
+        } else {
+            value = target.value;
+        }
+
         const name = target.name;
 
         this.setState({
@@ -69,17 +82,35 @@ class DatasetsComponent extends Component {
     }
 
     handleSubmit(event) {
-        var title = this.state.newDatasetTitle;
-        var text = this.state.newDatasetText;
-        if (title !== '' && text !== '') {
-            this.sendNewDataset(title, text);
+
+        // console.log(this.state.mode);
+
+        if (this.state.createMode === 'file')  {
+            const title = this.state.newDatasetTitle;
+            const file = this.state.newDatasetFile;
+
+            console.log(title, file);
+
+            if (title !== '' && file !== null) {
+                this.uploadFileDataset(title, file);
+            }
+
+        } else {
+            const title = this.state.newDatasetTitle;
+            const text = this.state.newDatasetText;
+
+            if (title !== '' && text !== '') {
+                this.uploadTextDataset(title, text);
+            }
         }
+
+        
     }
 
     handleEdit(id) {
         var text = this.state.editedDatasetText;
         if (text !== '' && id) {
-            this.sendEditDataset(id, text);
+            this.updateDataset(id, text);
         }
     }
 
@@ -140,10 +171,45 @@ class DatasetsComponent extends Component {
             .catch(error => console.log(error));
     }
 
-    sendNewDataset(name, data) {
+    uploadFileDataset(title, file) {
+        const url = 'http://169.60.115.39:8888/upload/file';
+
+        var data = new FormData();
+
+        data.append("file", file);
+        data.append("title", title);
+
+        return fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                // 'Content-Type': 'multipart/form-data',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: data, // тип данных в body должен соответвовать значению заголовка "Content-Type"
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    alert("Success!");
+                    this.toggleDatasetModal();
+                    this.loadDatasets();
+                }
+                else {
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
+    }
+
+    uploadTextDataset(title, data) {
         var url = 'http://169.60.115.39:8888/upload/small';
         var params = {
-            "title": name,
+            "title": title,
             "text": data,
         };
 
@@ -173,8 +239,9 @@ class DatasetsComponent extends Component {
             .catch(error => console.log(error));
     }
 
-    sendEditDataset(id, data) {
+    updateDataset(id, data) {
         var url = 'http://169.60.115.39:8888/update/small';
+
         var params = {
             "dataset_id": id,
             "text": data,
@@ -203,6 +270,18 @@ class DatasetsComponent extends Component {
                     alert(response.text);
                 }})
             .catch(error => console.log(error));
+    }
+
+    showFileUpload() {
+        this.setState({
+            createMode: 'file'
+        })
+    }
+
+    showTextArea() {
+        this.setState({
+            createMode: 'text'
+        })
     }
 
     render() {
@@ -256,6 +335,34 @@ class DatasetsComponent extends Component {
                 );
             });
 
+            let datasetSource = null;
+
+            if (this.state.createMode === 'file') {
+                datasetSource = 
+                    <Form.Group controlId="formGroupText">
+                        <Form.Label>File</Form.Label>
+                        <Form.Control required
+                            as="input" 
+                            type="file" 
+                            name={'newDatasetFile'}
+                            onChange={this.handleInputChange}
+                        />
+                    </Form.Group>
+            } else {
+                datasetSource =
+                    <Form.Group controlId="formGroupText">
+                        <Form.Label>Text</Form.Label>
+                        <Form.Control required
+                            as="textarea"
+                            rows="10"
+                            name={'newDatasetText'}
+                            onChange={this.handleInputChange}
+                        />
+                    </Form.Group>
+            }
+
+            
+
             return (
                 <div>
                     <div className={"p-3"}>
@@ -275,7 +382,7 @@ class DatasetsComponent extends Component {
                                     <Modal.Header closeButton>
                                         <Modal.Title id="contained-modal-title-vcenter">
                                             Create new dataset
-                                    </Modal.Title>
+                                        </Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>
                                         <Form onSubmit={this.handleSubmit}>
@@ -288,15 +395,11 @@ class DatasetsComponent extends Component {
                                                     onChange={this.handleInputChange}
                                                 />
                                             </Form.Group>
-                                            <Form.Group controlId="formGroupText">
-                                                <Form.Label>Text</Form.Label>
-                                                <Form.Control required
-                                                    as="textarea"
-                                                    rows="10"
-                                                    name={'newDatasetText'}
-                                                    onChange={this.handleInputChange}
-                                                />
-                                            </Form.Group>
+                                            <ButtonGroup size="sm" className="mt-3">
+                                                <Button variant="secondary" onClick={() => this.showFileUpload()}>Upload File</Button>
+                                                <Button variant="secondary" onClick={() => this.showTextArea()}>Paste Text</Button>
+                                            </ButtonGroup>
+                                            {datasetSource}
                                         </Form>
                                     </Modal.Body>
                                     <Modal.Footer>
