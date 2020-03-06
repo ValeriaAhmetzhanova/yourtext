@@ -8,20 +8,24 @@ function App(props) {
 
     const [authTokens, setAuthTokens] = useState();
 
+    const getToken = () => {
+        return localStorage.getItem("token");
+    }
+
     const setTokens = (data) => {
-        localStorage.setItem("tokens", JSON.stringify(data));
+        localStorage.setItem("token", data);
         setAuthTokens(data);
     }
 
-  return (
-      <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
-          <Router>
-              <div className="App">
-                  <Main token={authTokens}/>
-              </div>
-          </Router>
-      </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={{ authTokens: getToken, setAuthTokens: setTokens }}>
+            <Router>
+                <div className="App">
+                    <Main token={getToken()}/>
+                </div>
+            </Router>
+        </AuthContext.Provider>
+    );
 }
 
 export default App;

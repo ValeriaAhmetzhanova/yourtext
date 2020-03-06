@@ -14,12 +14,11 @@ class HeaderComponent extends Component {
         var navigation;
         if (this.props.token) {
             navigation =  (
-                    <div className="collapse navbar-collapse" id="navbarResponsive">
-                        <ul id="navigation-list" className="navbar-nav ml-auto">
-                            <li  className="nav-item"><NavLink className="nav-link" to='/profile'>Profile</NavLink></li>
-                        </ul>
-                    </div>
-
+                <div className="collapse navbar-collapse" id="navbarResponsive">
+                    <ul id="navigation-list" className="navbar-nav ml-auto">
+                        <li className="nav-item"><NavLink className="nav-link" to='/profile'>Profile</NavLink></li>
+                    </ul>
+                </div>
             );
         }
         else {
