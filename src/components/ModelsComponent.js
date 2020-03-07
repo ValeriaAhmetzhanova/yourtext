@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ButtonToolbar, Card, Form, Modal } from "react-bootstrap";
+import { Button, ButtonToolbar, Card, Form, Modal, Spinner } from "react-bootstrap";
 import { Chart } from 'react-charts';
 
 class ModelsComponent extends Component {
@@ -249,7 +249,7 @@ class ModelsComponent extends Component {
         if (this.state.loadingArch || this.state.loadingDatasets) {
             return (
                 <div>
-                    Loading...
+                    <Spinner animation="border" variant="primary" />
                 </div>
             );
         }
