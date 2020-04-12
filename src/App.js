@@ -10,12 +10,12 @@ function App(props) {
 
     const getToken = () => {
         return localStorage.getItem("token");
-    }
+    };
 
     const setTokens = (data) => {
         localStorage.setItem("token", data);
         setAuthTokens(data);
-    }
+    };
 
     return (
         <AuthContext.Provider value={{ authTokens: getToken, setAuthTokens: setTokens }}>

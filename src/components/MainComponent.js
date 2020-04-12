@@ -21,7 +21,7 @@ class Main extends Component {
             <div>
                 <HeaderComponent token={this.props.token}/>
                 <Switch>
-                    <Route path="/main" component={() => <MainPageComponent/>} />} />
+                    <Route path="/main" component={() => <MainPageComponent token={this.props.token}/>} />} />
                     <Route path="/login" component={Login} />
                     <Route path="/signup" component={Signup} />
                     <PrivateRoute path="/profile" component={() => <ProfileComponent token={this.props.token}/>} />} />

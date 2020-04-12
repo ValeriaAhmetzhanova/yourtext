@@ -6,13 +6,13 @@ class HeaderComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            token: this.props.token,
         };
     }
 
     render (){
         var navigation;
-        if (this.props.token) {
+        if (this.state.token) {
             navigation =  (
                 <div className="collapse navbar-collapse" id="navbarResponsive">
                     <ul id="navigation-list" className="navbar-nav ml-auto">
