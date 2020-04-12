@@ -41,7 +41,7 @@ class MainPageComponent extends Component {
         open: false,
         token: this.props.token,
         models: [],
-        modelSelected: '',
+        modelSelected: 'default',
     };
 
     componentDidMount() {
@@ -171,6 +171,7 @@ class MainPageComponent extends Component {
                                     onOpenChange={this.onOpenChange}
                                     onSearchChange={this.onSearchChange}
                                     suggestions={this.state.suggestions}
+                                    model={this.state.modelSelected}
                                 />
                                 <SideToolbar />
                             </div>
