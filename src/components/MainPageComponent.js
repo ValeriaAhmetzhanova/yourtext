@@ -67,7 +67,7 @@ class MainPageComponent extends Component {
         return (
             <div className="container">
                 <div className="row">
-                    <div className="col-lg-12">
+                    <div className="col-lg-12" style={{textAlign: "center"}}>
                         <h2 className="mt-5">Start creating in the area below</h2>
                         <p className="lead">Hit Escape to finish your thoughts</p>
                     </div>

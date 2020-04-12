@@ -41,7 +41,7 @@ class ProfileComponent extends Component {
         }
 
         return(
-            <div>
+            <div style={{textAlign:"center"}}>
                 <ButtonGroup size="sm" className="mt-3">
                     <Button variant="secondary" onClick={() => this.showDatasets()}>My Datasets</Button>
                     <Button variant="secondary" onClick={() => this.showModels()}>My Models</Button>
