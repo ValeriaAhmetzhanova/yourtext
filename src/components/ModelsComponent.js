@@ -170,7 +170,7 @@ class ModelsComponent extends Component {
         })
             .then(response => response.json())
             .then(response => {
-                if (response.success) {
+                if (response.success && response.data.length > 0) {
                     this.setState({
                         datasets: response.data,
                         loadingDatasets: false,
