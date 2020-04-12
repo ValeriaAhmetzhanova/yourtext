@@ -170,12 +170,14 @@ class ModelsComponent extends Component {
         })
             .then(response => response.json())
             .then(response => {
-                if (response.success && response.data.length > 0) {
-                    this.setState({
-                        datasets: response.data,
-                        loadingDatasets: false,
-                        newModelDataset: response.data[0].meta._id,
-                    });
+                if (response.success) {
+                    if (response.data.length > 0){
+                        this.setState({
+                            datasets: response.data,
+                            loadingDatasets: false,
+                            newModelDataset: response.data[0].meta._id,
+                        });
+                    }
                 }
                 else {
                     alert(response.text);
