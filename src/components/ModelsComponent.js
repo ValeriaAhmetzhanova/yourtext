@@ -177,6 +177,10 @@ class ModelsComponent extends Component {
                             loadingDatasets: false,
                             newModelDataset: response.data[0].meta._id,
                         });
+                    } else {
+                        this.setState({
+                            loadingDatasets: false,
+                        });
                     }
                 }
                 else {
