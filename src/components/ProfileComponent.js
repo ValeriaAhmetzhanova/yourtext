@@ -4,6 +4,7 @@ import { Button, ButtonGroup } from "react-bootstrap";
 import DatasetsComponent from "./DatasetsComponent";
 import ModelsComponent from "./ModelsComponent";
 import SettingsComponent from "./SettingsComponent";
+import {NavLink} from "react-router-dom";
 
 
 class ProfileComponent extends Component {
@@ -45,6 +46,7 @@ class ProfileComponent extends Component {
                 <ButtonGroup size="sm" className="mt-3">
                     <Button variant="secondary" onClick={() => this.showDatasets()}>My Datasets</Button>
                     <Button variant="secondary" onClick={() => this.showModels()}>My Models</Button>
+                    <Button variant="secondary"><NavLink className="text-white" to='/main'>Generate text </NavLink></Button>
                     <Button variant="secondary" onClick={() => this.showProfile()}>Profile Settings</Button>
                 </ButtonGroup>
                 {page}
