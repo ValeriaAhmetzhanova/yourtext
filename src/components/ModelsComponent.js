@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, ButtonToolbar, Card, Form, Modal, Spinner } from "react-bootstrap";
 import { Chart } from 'react-charts';
+import ModelDetails from './ModelDetails'
 
 class ModelsComponent extends Component {
 
@@ -11,6 +12,8 @@ class ModelsComponent extends Component {
             newModelTitle: '',
             newModelArch: '',
             newModelDataset: '',
+            detailsModalShow: false,
+            selectedModel: null,
             token: this.props.token,
             models: [],
             archs: [],
@@ -153,6 +156,15 @@ class ModelsComponent extends Component {
         this.setState({ newModelModalShow: !this.state.newModelModalShow });
     }
 
+    toggleModelDetailsModal(model) {
+        this.setState(
+            {
+                detailsModalShow: !this.state.detailsModalShow,
+                selectedModel: model
+            }
+        )
+    }
+
     loadDatasets() {
         var url = 'http://169.60.115.39:8888/datasets';
 
@@ -261,22 +273,39 @@ class ModelsComponent extends Component {
         }
         else {
             const models = this.state.models.map((model) => {
+                
                 var id = model._id;
                 var title = model.title;
                 var state = model.progress.state;
+                var created = model.date_created;
+
                 if (state === 'created'){
                     return (
-                        <Card className={"col-4 dataset-card"} key={id}>
-                            <Card.Body>{title}</Card.Body>
-                            <span onClick={() => this.trainModel(id)}>train</span>
+                        <Card style={{ width: '18rem', textAlign: "left" }} className={"col-4 dataset-card"} key={id}>
+                            <Card.Body>
+                                <Card.Title>{title}</Card.Title>
+                                <span onClick={() => this.trainModel(id)}>train</span>
+                            </Card.Body>
                         </Card>
                     );
                 }
                 else {
                     return (
-                        <Card className={"col-4 dataset-card"} key={id}>
-                            <Card.Body>{title}</Card.Body>
-                            <span>Status: {state}</span>
+                        <Card style={{ width: '18rem', textAlign: "left" }} className={"col-4 dataset-card"} key={id}>
+                            <Card.Body>
+                                <Card.Title>{title}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">{created}</Card.Subtitle>
+                                <Card.Text >{state}</Card.Text>
+                                <Button variant="primary" onClick={() => {
+                                    // this.toggleEditModal(dataset);
+                                }}>Use</Button>
+                                <Button variant="primary" onClick={() => {
+                                    this.toggleModelDetailsModal(model)
+                                }}>Info</Button>
+                                <Button variant="danger" onClick={() => {
+                                    // this.toggleDeleteModal(dataset)
+                                }}>Delete</Button>
+                            </Card.Body>
                         </Card>
                     );
                 }
@@ -303,6 +332,19 @@ class ModelsComponent extends Component {
                 );
             });
 
+            let detailsModal = null;
+
+            if (this.state.detailsModalShow) {
+                detailsModal = <ModelDetails
+                    show={true}
+                    model={this.state.selectedModel}
+                    onHide={() => {
+                        this.toggleModelDetailsModal(null);
+                    }}
+                    token={this.state.token}
+                />;
+            }
+
             return (
                 <div>
                     <div className={"p-3"}>
@@ -311,7 +353,8 @@ class ModelsComponent extends Component {
                             <ButtonToolbar>
                                 <Button variant="primary" onClick={() => this.toggleModelModal()}>
                                     New
-                            </Button>
+                                </Button>
+                                {detailsModal}
                                 <Modal
                                     show={this.state.newModelModalShow}
                                     onHide={() => this.toggleModelModal()}
