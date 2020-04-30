@@ -24,7 +24,8 @@ export class MentionSuggestions extends Component {
     loading: false,
     suggestions: [{
       value: 'test'
-    }]
+    }],
+    model: this.props.model,
   };
 
   constructor(props) {
@@ -331,11 +332,21 @@ export class MentionSuggestions extends Component {
     return 'http://169.60.115.39:8888/predict';
   }
 
-  generateText = (query) => {
-    
-    var params = {
-      prefix: query,
-    };
+  generateText = (query, model) => {
+    console.log(model);
+    var params;
+
+    if (model !== 'default'){
+      params = {
+        prefix: query,
+        sampler: model,
+      };
+    }
+    else {
+      params = {
+        prefix: query,
+      };
+    }
 
     fetch(this.generationUrl(), {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -376,7 +387,7 @@ export class MentionSuggestions extends Component {
     });
 
     this.openDropdown();
-    this.generateText(query);
+    this.generateText(query, this.state.model);
   };
 
   openDropdown = () => {

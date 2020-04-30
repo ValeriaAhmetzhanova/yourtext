@@ -32,7 +32,7 @@ class MainPageComponent extends Component {
             theme: { buttonStyles, toolbarStyles, blockTypeSelectStyles }
         });
         this.loadModels = this.loadModels.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleModelSelect = this.handleModelSelect.bind(this);
     }
 
     state = {
@@ -41,7 +41,7 @@ class MainPageComponent extends Component {
         open: false,
         token: this.props.token,
         models: [],
-        modelSelected: '',
+        modelSelected: 'default',
     };
 
     componentDidMount() {
@@ -99,11 +99,11 @@ class MainPageComponent extends Component {
         this.editor.focus();
     };
 
-    handleInputChange(event) {
+    handleModelSelect(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.value;
         const name = target.name;
-
+        // loadmodel here and alert
         this.setState({
             [name]: value
         });
@@ -127,7 +127,7 @@ class MainPageComponent extends Component {
                 }
             });
             models.unshift(
-                <option key={-1} value={-1}>
+                <option key={-1} value={'default'}>
                     {"Default"}
                 </option>
             )
@@ -149,7 +149,7 @@ class MainPageComponent extends Component {
                                 <Form.Control
                                     as="select"
                                     name={'modelSelected'}
-                                    onChange={this.handleInputChange}
+                                    onChange={this.handleModelSelect}
                                 >
                                     {models}
                                 </Form.Control>
@@ -171,6 +171,7 @@ class MainPageComponent extends Component {
                                     onOpenChange={this.onOpenChange}
                                     onSearchChange={this.onSearchChange}
                                     suggestions={this.state.suggestions}
+                                    model={this.state.modelSelected}
                                 />
                                 <SideToolbar />
                             </div>
@@ -204,6 +205,7 @@ class MainPageComponent extends Component {
                                     onOpenChange={this.onOpenChange}
                                     onSearchChange={this.onSearchChange}
                                     suggestions={this.state.suggestions}
+                                    model={this.state.modelSelected}
                                 />
                                 <SideToolbar />
                             </div>
