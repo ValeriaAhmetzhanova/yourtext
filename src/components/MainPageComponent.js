@@ -13,7 +13,7 @@ import blockTypeSelectStyles from './styles/blockTypeSelectStyles.module.css';
 
 import mentions from './mentions';
 import 'draft-js-side-toolbar-plugin/lib/plugin.css';
-import {Form} from "react-bootstrap";
+import {Form, Modal} from "react-bootstrap";
 
 class MainPageComponent extends Component {
 
@@ -33,6 +33,7 @@ class MainPageComponent extends Component {
         });
         this.loadModels = this.loadModels.bind(this);
         this.handleModelSelect = this.handleModelSelect.bind(this);
+        this.toggleLoadingModal = this.toggleLoadingModal.bind(this);
     }
 
     state = {
@@ -42,12 +43,17 @@ class MainPageComponent extends Component {
         token: this.props.token,
         models: [],
         modelSelected: 'default',
+        loadingModalShow: false
     };
 
     componentDidMount() {
         if (this.state.token){
             this.loadModels();
         }
+    }
+
+    toggleLoadingModal() {
+        this.setState({ loadingModalShow: !this.state.loadingModalShow });
     }
 
     loadModels() {
@@ -99,14 +105,63 @@ class MainPageComponent extends Component {
         this.editor.focus();
     };
 
+    loadSampler(id){
+        var url = 'http://169.60.115.39:8888/samplers/load';
+
+        var params = {
+            "model_id": id
+        };
+
+        return fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.token,
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(params), // тип данных в body должен соответвовать значению заголовка "Content-Type"
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    this.setState({
+                        modelSelected: id
+                    });
+                    this.toggleLoadingModal();
+                    alert("Model is successfully loaded");
+                }
+                else if (response.text === id + " is already loaded") {
+                    this.setState({
+                        modelSelected: id
+                    });
+                    this.toggleLoadingModal();
+                    alert("Model is successfully loaded");
+                }
+                else {
+                    this.toggleLoadingModal();
+                    alert(response.text);
+                }
+            })
+            .catch(error => console.log(error));
+    }
+
     handleModelSelect(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        // loadmodel here and alert
-        this.setState({
-            [name]: value
-        });
+        if (value !== "default"){
+            this.toggleLoadingModal();
+            this.loadSampler(value);
+        }
+        else {
+            this.setState({
+                modelSelected: "default"
+            });
+        }
     }
 
     render() {
@@ -156,6 +211,17 @@ class MainPageComponent extends Component {
                             </Form.Group>
                         </Form>
                     </div>
+
+                    <Modal
+                        show={this.state.loadingModalShow}
+                        size="lg"
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                    >
+                        <Modal.Body>
+                            <h4>The model is loading, please wait...</h4>
+                        </Modal.Body>
+                    </Modal>
 
                     <div className="row">
                         <div className="col-lg-12 col-md-12">
