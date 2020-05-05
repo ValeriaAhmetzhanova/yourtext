@@ -34,6 +34,8 @@ class MainPageComponent extends Component {
         this.loadModels = this.loadModels.bind(this);
         this.handleModelSelect = this.handleModelSelect.bind(this);
         this.toggleLoadingModal = this.toggleLoadingModal.bind(this);
+
+        this.getSelectedModel = this.getSelectedModel.bind(this);
     }
 
     state = {
@@ -45,6 +47,10 @@ class MainPageComponent extends Component {
         modelSelected: 'default',
         loadingModalShow: false
     };
+
+    getSelectedModel() {
+        return this.state.modelSelected;
+    }
 
     componentDidMount() {
         if (this.state.token){
@@ -129,18 +135,19 @@ class MainPageComponent extends Component {
             .then(response => {
                 if (response.success) {
                     this.setState({
-                        modelSelected: id
+                        modelSelected: response.sampler_id
                     });
                     this.toggleLoadingModal();
                     alert("Model is successfully loaded");
                 }
-                else if (response.text === id + " is already loaded") {
-                    this.setState({
-                        modelSelected: id
-                    });
-                    this.toggleLoadingModal();
-                    alert("Model is successfully loaded");
-                }
+                // else if (response.text === id + " is already loaded") {
+                //     this.setState({
+                //         modelSelected: id
+                //     });
+                //     this.toggleLoadingModal();
+                //     alert("Model is successfully loaded");
+                //     console.log(this.state.modelSelected);
+                // }
                 else {
                     this.toggleLoadingModal();
                     alert(response.text);
@@ -234,10 +241,11 @@ class MainPageComponent extends Component {
                                 />
                                 <MentionSuggestions
                                     open={this.state.open}
+                                    token={this.state.token}
                                     onOpenChange={this.onOpenChange}
                                     onSearchChange={this.onSearchChange}
                                     suggestions={this.state.suggestions}
-                                    model={this.state.modelSelected}
+                                    getModel={this.getSelectedModel}
                                 />
                                 <SideToolbar />
                             </div>
@@ -268,10 +276,11 @@ class MainPageComponent extends Component {
                                 />
                                 <MentionSuggestions
                                     open={this.state.open}
+                                    token={this.state.token}
                                     onOpenChange={this.onOpenChange}
                                     onSearchChange={this.onSearchChange}
                                     suggestions={this.state.suggestions}
-                                    model={this.state.modelSelected}
+                                    getModel={this.getSelectedModel}
                                 />
                                 <SideToolbar />
                             </div>

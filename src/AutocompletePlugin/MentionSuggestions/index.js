@@ -17,6 +17,8 @@ export class MentionSuggestions extends Component {
     entryComponent: PropTypes.func,
     onAddMention: PropTypes.func,
     suggestions: PropTypes.array.isRequired,
+    getModel: PropTypes.func.isRequired,
+    token: PropTypes.string.isRequired
   };
 
   state = {
@@ -25,7 +27,8 @@ export class MentionSuggestions extends Component {
     suggestions: [{
       value: 'test'
     }],
-    model: this.props.model,
+    getModel: this.props.getModel,
+    token: this.props.token
   };
 
   constructor(props) {
@@ -83,8 +86,6 @@ export class MentionSuggestions extends Component {
   // }
 
   onEditorStateChange = editorState => {
-    // console.log('0');
-
     if (this.state.loading) {
       return editorState;
     }
@@ -333,19 +334,29 @@ export class MentionSuggestions extends Component {
   }
 
   generateText = (query, model) => {
-    console.log(model);
+    console.log(model, 'suka');
     var params;
+    var headers;
 
     if (model !== 'default'){
       params = {
         prefix: query,
         sampler: model,
       };
+
+      headers = {
+        "Content-Type": 'application/json',
+        "Authorization": 'Bearer ' + this.state.token,
+      }
     }
     else {
       params = {
         prefix: query,
       };
+
+      headers = {
+        "Content-Type": 'application/json'
+      }
     }
 
     fetch(this.generationUrl(), {
@@ -354,9 +365,7 @@ export class MentionSuggestions extends Component {
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
       
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
 
       redirect: 'follow', // manual, *follow, error
       referrer: 'no-referrer', // no-referrer, *client
@@ -380,14 +389,12 @@ export class MentionSuggestions extends Component {
 
 
   startAutoComplete = (query) => {
-    console.log('Completing', query);
-
     this.setState({
       loading: true
     });
 
     this.openDropdown();
-    this.generateText(query, this.state.model);
+    this.generateText(query, this.state.getModel());
   };
 
   openDropdown = () => {
@@ -452,6 +459,7 @@ export class MentionSuggestions extends Component {
       onOpenChange, // eslint-disable-line no-unused-vars
       onAddMention, // eslint-disable-line no-unused-vars, no-shadow
       onSearchChange, // eslint-disable-line no-unused-vars, no-shadow
+      getModel, // eslint-disable-line no-unused-vars, no-shadow
       suggestions, // eslint-disable-line no-unused-vars
       ariaProps, // eslint-disable-line no-unused-vars
       callbacks, // eslint-disable-line no-unused-vars
